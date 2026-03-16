@@ -1,0 +1,6 @@
+@Jason_BackendTest_MidLevel_HostAddress = http://localhost:5112
+
+GET {{Jason_BackendTest_MidLevel_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
