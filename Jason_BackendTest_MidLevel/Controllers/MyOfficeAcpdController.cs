@@ -1,11 +1,15 @@
 using Jason_BackendTest_MidLevel.Helpers;
 using Jason_BackendTest_MidLevel.Models.Dtos;
 using Jason_BackendTest_MidLevel.Repositories.Interfaces;
+using Jason_BackendTest_MidLevel.SwaggerExamples;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text.Json;
 
 namespace Jason_BackendTest_MidLevel.Controllers
 {
+    /// <summary>MyOffice_ACPD 資料表 CRUD API</summary>
     [ApiController]
     [Route("api/myofficeacpd")]
     public class MyOfficeAcpdController : ControllerBase
@@ -22,9 +26,11 @@ namespace Jason_BackendTest_MidLevel.Controllers
 
         // ─────────────────────────────────────────────────────────
         // GET /api/myofficeacpd
-        // 查詢所有資料  →  200 OK
         // ─────────────────────────────────────────────────────────
+        /// <summary>查詢所有 ACPD 資料</summary>
+        /// <remarks>回傳 MyOffice_ACPD 資料表全部資料，依建立時間倒序排列。</remarks>
         [HttpGet]
+        [SwaggerOperation(Summary = "查詢所有資料", Tags = new[] { "MyOfficeAcpd" })]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll()
@@ -46,9 +52,12 @@ namespace Jason_BackendTest_MidLevel.Controllers
 
         // ─────────────────────────────────────────────────────────
         // GET /api/myofficeacpd/{id}
-        // 查詢單筆資料  →  200 OK / 404 Not Found
         // ─────────────────────────────────────────────────────────
+        /// <summary>查詢單筆 ACPD 資料</summary>
+        /// <param name="id">ACPD_SID（主鍵，char 20）</param>
+        /// <remarks>依 SID 查詢單筆資料，找不到回傳 404。</remarks>
         [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "查詢單筆資料", Tags = new[] { "MyOfficeAcpd" })]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -75,9 +84,30 @@ namespace Jason_BackendTest_MidLevel.Controllers
 
         // ─────────────────────────────────────────────────────────
         // POST /api/myofficeacpd
-        // 新增資料  →  201 Created / 400 Bad Request / 500 Internal Server Error
         // ─────────────────────────────────────────────────────────
+        /// <summary>新增 ACPD 資料</summary>
+        /// <remarks>
+        /// SID 由伺服器透過 NEWSID 預存程序自動產生，無需帶入。
+        ///
+        /// 範例請求 JSON：
+        ///
+        ///     POST /api/myofficeacpd
+        ///     {
+        ///         "ACPD_Cname":    "王小明",
+        ///         "ACPD_Ename":    "Wang Xiao Ming",
+        ///         "ACPD_Sname":    "小明",
+        ///         "ACPD_Email":    "xiaoming@example.com",
+        ///         "ACPD_Status":   0,
+        ///         "ACPD_Stop":     false,
+        ///         "ACPD_LoginID":  "xiaoming",
+        ///         "ACPD_LoginPWD": "P@ssw0rd123",
+        ///         "ACPD_Memo":     "測試新增",
+        ///         "ACPD_NowID":    "ADMIN"
+        ///     }
+        /// </remarks>
         [HttpPost]
+        [SwaggerOperation(Summary = "新增資料", Tags = new[] { "MyOfficeAcpd" })]
+        [SwaggerRequestExample(typeof(CreateAcpdDto), typeof(CreateAcpdDtoExample))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -104,9 +134,32 @@ namespace Jason_BackendTest_MidLevel.Controllers
 
         // ─────────────────────────────────────────────────────────
         // PUT /api/myofficeacpd/{id}
-        // 更新資料  →  200 OK / 400 Bad Request / 404 Not Found / 500 Internal Server Error
         // ─────────────────────────────────────────────────────────
+        /// <summary>更新 ACPD 資料</summary>
+        /// <param name="id">ACPD_SID（主鍵，char 20）</param>
+        /// <param name="dto">更新資料 DTO</param>
+        /// <remarks>
+        /// 依 SID 更新資料，SID 不在 body 內，由 URL 帶入。
+        ///
+        /// 範例請求 JSON：
+        ///
+        ///     PUT /api/myofficeacpd/{id}
+        ///     {
+        ///         "ACPD_Cname":    "王小明（已更新）",
+        ///         "ACPD_Ename":    "Wang Xiao Ming Updated",
+        ///         "ACPD_Sname":    "小明U",
+        ///         "ACPD_Email":    "updated@example.com",
+        ///         "ACPD_Status":   1,
+        ///         "ACPD_Stop":     false,
+        ///         "ACPD_LoginID":  "xiaoming_v2",
+        ///         "ACPD_LoginPWD": "NewP@ss456",
+        ///         "ACPD_Memo":     "測試更新",
+        ///         "ACPD_UPDID":    "ADMIN"
+        ///     }
+        /// </remarks>
         [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "更新資料", Tags = new[] { "MyOfficeAcpd" })]
+        [SwaggerRequestExample(typeof(UpdateAcpdDto), typeof(UpdateAcpdDtoExample))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -137,9 +190,12 @@ namespace Jason_BackendTest_MidLevel.Controllers
 
         // ─────────────────────────────────────────────────────────
         // DELETE /api/myofficeacpd/{id}
-        // 刪除資料  →  204 No Content / 404 Not Found / 500 Internal Server Error
         // ─────────────────────────────────────────────────────────
+        /// <summary>刪除 ACPD 資料</summary>
+        /// <param name="id">ACPD_SID（主鍵，char 20）</param>
+        /// <remarks>依 SID 刪除資料，成功回傳 204 No Content。</remarks>
         [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "刪除資料", Tags = new[] { "MyOfficeAcpd" })]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
