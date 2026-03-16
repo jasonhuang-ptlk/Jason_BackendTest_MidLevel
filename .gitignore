@@ -4,3 +4,4 @@ bin/
 *.user
 .DS_Store
 TSQLScript/
+.claude/
